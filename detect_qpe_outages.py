@@ -8,10 +8,9 @@ from influxdb_client.client.warnings import MissingPivotFunction
 import warnings 
 warnings.simplefilter("ignore", MissingPivotFunction)
 
-# token_slack = os.environ['SLACK_TOKEN']
-# channel = os.environ['SLACK_CHANNEL_ID']
+token_slack = os.environ['SLACK_TOKEN']
+channel = os.environ['SLACK_CHANNEL_ID']
 influx_token_prod_read = os.environ['INFLUX_TOKEN_PROD_READ']
-# influx_token_dev_read = os.environ['INFLUX_TOKEN_DEV_READ']
 
 # grabs the site names and codes of all sites that are marked "installed" or "maintenance required"
 def get_sites():
@@ -75,18 +74,17 @@ def send_slack_message(token, channel, message, file_path=None):
     except SlackApiError as e:
         print(f"Slack API Error: {e.response['error']}")
 
-
 all_sites = get_sites()
-
 
 no_qpe01h = []
 for site_code in all_sites.keys():
     query = f'''
         from(bucket: "prod")
-        |> range(start: -3h)
+        |> range(start: -2h)
         |> filter(fn: (r) => r.site_code == "{site_code}")
         |> filter(fn: (r) => r._measurement == "qpe_01h")
         '''
+    print('Query:', query)
 
     df = read_from_influx(query, token=influx_token_prod_read)
 
@@ -112,7 +110,7 @@ percentage = total_num_no_qpe_01h/total_num_sites
 
 # Send a Slack message if the percentage of sites with no qpe_01h is above the threshold.
 if percentage > outage_alert_level_1:
-    message = f"{percentage:.0%} of sites have no qpe_01h data for the last 3 hours. Check logs for more details. Sites with no qpe_01h data: {no_qpe01h}"
+    message = f"{percentage:.0%} of sites have no qpe_01h data for the last 2 hours. Check Influx and AWS."
     print('Sending Slack message:', message)
     send_slack_message(token_slack, channel, message)
 

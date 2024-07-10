@@ -112,6 +112,6 @@ percentage = total_num_no_qpe_01h/total_num_sites
 if percentage > outage_alert_level_1:
     message = f"{percentage:.0%} of sites have no qpe_01h data for the last 2 hours. Check Influx and AWS."
     print('Sending Slack message:', message)
-    send_slack_message(token_slack, channel, message)
+    # send_slack_message(token_slack, channel, message)
 
 print('No qpe_01h outage detected.')

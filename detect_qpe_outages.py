@@ -9,7 +9,8 @@ import warnings
 warnings.simplefilter("ignore", MissingPivotFunction)
 
 token_slack = os.environ['SLACK_TOKEN']
-channel = os.environ['SLACK_CHANNEL_ID']
+# channel = os.environ['SLACK_CHANNEL_ID']
+channel = 'C02B4KZ2V9Z' # test channel
 influx_token_prod_read = os.environ['INFLUX_TOKEN_PROD_READ']
 
 # grabs the site names and codes of all sites that are marked "installed" or "maintenance required"
@@ -84,7 +85,7 @@ for site_code in all_sites.keys():
         |> filter(fn: (r) => r.site_code == "{site_code}")
         |> filter(fn: (r) => r._measurement == "qpe_01h")
         '''
-    print('Query:', query)
+    # print('Query:', query)
 
     df = read_from_influx(query, token=influx_token_prod_read)
 

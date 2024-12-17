@@ -27,7 +27,7 @@ def get_sites():
             # Find the site code in custom fields
             for field in site['custom_fields']:
                 if field['id'] == '9ddd3d21-ab47-4f6c-966d-00854091501e':
-                    site_code = field['value']
+                    site_code = field.get('value', 'Unknown Site Code')
                     break
             if site_code:
                 # Map the site code to the site name
